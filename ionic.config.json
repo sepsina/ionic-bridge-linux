@@ -1,0 +1,7 @@
+{
+  "name": "ionic-bridge",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "angular"
+}
