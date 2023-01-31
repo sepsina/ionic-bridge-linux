@@ -21,7 +21,7 @@ export class SerialLinkService {
 
     setMap = new Map();
 
-    delTest: number;
+    //delTest: number;
 
     constructor(private storage: StorageService,
                 private events: EventsService,

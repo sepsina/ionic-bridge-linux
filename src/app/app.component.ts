@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/naming-convention */
 /* eslint-disable object-shorthand */
 import { AfterViewInit, Component, ElementRef, OnInit, ViewChild, NgZone, Renderer2 } from '@angular/core';
 import { EventsService } from './services/events.service';
@@ -29,7 +30,7 @@ const DUMMY_SCROLL = '- scroll -';
 const dumyScroll: gIF.scroll_t = {
     name: DUMMY_SCROLL,
     yPos: 0
-}
+};
 
 @Component({
     selector: 'app-root',
