@@ -1,3 +1,5 @@
+/* eslint-disable @angular-eslint/component-class-suffix */
+/* eslint-disable @typescript-eslint/naming-convention */
 import { Component, Inject, NgZone, AfterViewInit, ElementRef, ViewChild } from '@angular/core';
 import { SerialLinkService } from '../services/serial-link.service';
 import { StorageService } from '../services/storage.service';
@@ -5,10 +7,10 @@ import { UtilsService } from '../services/utils.service';
 import { Validators, FormControl } from '@angular/forms';
 import { MatSelectChange } from '@angular/material/select';
 import { MatTooltip } from '@angular/material/tooltip';
-import { MAT_DIALOG_DATA, MatDialogRef } from "@angular/material/dialog";
+import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 
 import * as gConst from '../gConst';
-import * as gIF from '../gIF'
+import * as gIF from '../gIF';
 import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
 
 const EMPTY_NAME = '--- empty ---';
@@ -61,7 +63,7 @@ export class EditStats implements AfterViewInit {
      */
     async refresh() {
 
-        let attribs: gIF.hostedAttr_t[] = JSON.parse(JSON.stringify(Array.from(this.storage.attrMap.values())));
+        const attribs: gIF.hostedAttr_t[] = JSON.parse(JSON.stringify(Array.from(this.storage.attrMap.values())));
 
         this.thermostats = [];
         this.on_off_all = [];
@@ -69,7 +71,7 @@ export class EditStats implements AfterViewInit {
 
         for(const attr of attribs){
             if(attr.clusterID === gConst.CLUSTER_ID_MS_TEMPERATURE_MEASUREMENT){
-                let thermostat = {} as gIF.thermostat_t;
+                const thermostat = {} as gIF.thermostat_t;
                 thermostat.name = attr.name;
                 thermostat.partNum = attr.partNum;
                 thermostat.extAddr = attr.extAddr;
@@ -95,7 +97,7 @@ export class EditStats implements AfterViewInit {
             }
             if(attr.clusterServer){
                 if(attr.clusterID === gConst.CLUSTER_ID_GEN_ON_OFF){
-                    let on_off_actuator = {} as gIF.on_off_actuator_t;
+                    const on_off_actuator = {} as gIF.on_off_actuator_t;
                     on_off_actuator.valid = true;
                     on_off_actuator.name = attr.name;
                     on_off_actuator.partNum = attr.partNum;
@@ -200,7 +202,7 @@ export class EditStats implements AfterViewInit {
     public setThermostatDesc(thermostat: gIF.thermostat_t){
 
         this.thermostatDesc = [];
-        let partDesc: gIF.part_t = this.dlgData.partMap.get(thermostat.partNum);
+        const partDesc: gIF.part_t = this.dlgData.partMap.get(thermostat.partNum);
         if(partDesc){
             let descVal = {} as gIF.descVal_t;
             descVal.key = 'S/N:';
@@ -227,7 +229,7 @@ export class EditStats implements AfterViewInit {
                 on_off: gIF.on_off_actuator_t){
         let ttMsg = '';
         ttMsg += `S/N: ${this.utils.extToHex(on_off.extAddr)} \n`;
-        let partDesc: gIF.part_t = this.dlgData.partMap.get(on_off.partNum);
+        const partDesc: gIF.part_t = this.dlgData.partMap.get(on_off.partNum);
         if(partDesc){
             ttMsg += `node-name: ${partDesc.devName} \n`;
             ttMsg += `part: ${partDesc.part} \n`;
@@ -235,7 +237,7 @@ export class EditStats implements AfterViewInit {
         }
         tt.message = ttMsg;
         tt.showDelay = 500;
-        tt.tooltipClass = "bind-tooltip";
+        tt.tooltipClass = 'bind-tooltip';
         tt.show();
     }
 
@@ -285,19 +287,19 @@ export class EditStats implements AfterViewInit {
 
             let done = false;
             idx = event.currentIndex + 1;
-            len = this.on_off_used.length
+            len = this.on_off_used.length;
             while(idx < len){
-                if(this.on_off_used[idx].name == EMPTY_NAME){
+                if(this.on_off_used[idx].name === EMPTY_NAME){
                     this.on_off_used.splice(idx, 1);
                     done = true;
                     break;
                 }
                 idx++;
             }
-            if(done == false){
+            if(done === false){
                 idx = 0;
                 while(idx < event.currentIndex){
-                    if(this.on_off_used[idx].name == EMPTY_NAME){
+                    if(this.on_off_used[idx].name === EMPTY_NAME){
                         this.on_off_used.splice(idx, 1);
                         break;
                     }
@@ -305,7 +307,7 @@ export class EditStats implements AfterViewInit {
                 }
             }
 
-            let actuator = {} as gIF.thermostatActuator_t;
+            const actuator = {} as gIF.thermostatActuator_t;
             actuator.name = on_off.name;
             actuator.extAddr = on_off.extAddr;
             actuator.endPoint = on_off.endPoint;
@@ -341,19 +343,19 @@ export class EditStats implements AfterViewInit {
 
             let done = false;
             idx = event.currentIndex + 1;
-            len = this.on_off_all.length
+            len = this.on_off_all.length;
             while(idx < len){
-                if(this.on_off_all[idx].name == EMPTY_NAME){
+                if(this.on_off_all[idx].name === EMPTY_NAME){
                     this.on_off_all.splice(idx, 1);
                     done = true;
                     break;
                 }
                 idx++;
             }
-            if(done == false){
+            if(done === false){
                 idx = 0;
                 while(idx < event.currentIndex){
-                    if(this.on_off_all[idx].name == EMPTY_NAME){
+                    if(this.on_off_all[idx].name === EMPTY_NAME){
                         this.on_off_all.splice(idx, 1);
                         break;
                     }
@@ -389,13 +391,13 @@ export class EditStats implements AfterViewInit {
     putEmpties(){
 
         for(let i = this.on_off_used.length; i < 6; i++){
-            let on_off = {} as gIF.on_off_actuator_t;
+            const on_off = {} as gIF.on_off_actuator_t;
             on_off.valid = false;
             on_off.name = EMPTY_NAME;
             this.on_off_used.push(on_off);
         }
         for(let i = this.on_off_all.length; i < 12; i++){
-            let on_off = {} as gIF.on_off_actuator_t;
+            const on_off = {} as gIF.on_off_actuator_t;
             on_off.valid = false;
             on_off.name = EMPTY_NAME;
             this.on_off_all.push(on_off);

@@ -52,6 +52,7 @@
     justify-content: center;
     align-items: center;
     border: 1px solid lightgray;
+    margin-bottom: 5px;
 }
 #edit-binds-button {
     display: flex;
@@ -60,6 +61,7 @@
     align-items: center;
     align-self: stretch;
     border: 1px solid lightgray;
+    margin-bottom: 5px;
 }
 #edit-dns-button {
     display: flex;
@@ -68,6 +70,7 @@
     align-items: center;
     align-self: stretch;
     border: 1px solid lightgray;
+    margin-bottom: 5px;
 }
 #edit-thermostats-button {
     display: flex;
@@ -76,7 +79,8 @@
     align-items: center;
     align-self: stretch;
     border: 1px solid lightgray;
-    padding: 0 5px;
+    //padding: 0 5px;
+    margin-bottom: 5px;
 }
 #test{
     flex: 1 1 auto;
@@ -101,13 +105,14 @@
     flex-direction: row;
     justify-content: flex-start;
     align-items: stretch;
-    gap: 5px;
+    //gap: 5px;
 }
 .attr-val {
     text-align: right;
     white-space: nowrap;
     cursor: move;
     user-select: none;
+    margin-right: 5px;
 }
 .attr-val:hover {
     color: black;
@@ -144,6 +149,27 @@
     font-size: 32px;
     height: 32px;
     width: 32px;
+}
+
+.center {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    -moz-transform: translateX(-50%) translateY(-50%);
+    -webkit-transform: translateX(-50%) translateY(-50%);
+    transform: translateX(-50%) translateY(-50%);
+    color: yellow;
+    font-size: 40px;
+}
+
+.overlay{
+    height:100vh;
+    width:100%;
+    background-color:rgba(0, 0, 0, 0.286);
+    z-index:    10;
+    top:        0;
+    left:       0;
+    position:   fixed;
 }
 
 

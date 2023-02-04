@@ -25,11 +25,11 @@
                     (click)="editBinds()">
                 <mat-icon fontSet="material-icons-round">link</mat-icon>
             </button>
-            <button id="edit-dns-button"
+            <!-- <button id="edit-dns-button"
                     mat-button
                     (click)="setDNS()">
                 <mat-icon fontSet="material-icons-round">dns</mat-icon>
-            </button>
+            </button> -->
             <button id="edit-thermostats-button"
                     mat-button
                     (click)="editThermostats()">
@@ -64,15 +64,18 @@
                         <div *ngIf="attr.value.isSel && !dragFlag"
                             class="attr-edit centered"
                             (mousedown)="setStyles(attr)">
-                            <mat-icon>settings</mat-icon>
+                            <mat-icon fontSet="material-icons-round">settings</mat-icon>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
-
     <div class="footer">
-
+    </div>
+    <div class="overlay" *ngIf="progressFlag">
+        <div class="center">
+            {{waitMsg}}
+        </div>
     </div>
 </div>

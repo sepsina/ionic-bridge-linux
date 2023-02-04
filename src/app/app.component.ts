@@ -23,7 +23,7 @@ import { EditStats } from './x-stat/x_stat.page';
 import * as gConst from './gConst';
 import * as gIF from './gIF';
 
-import { LoadingController } from '@ionic/angular';
+//import { LoadingController } from '@ionic/angular';
 import { CdkDragEnd, CdkDragStart } from '@angular/cdk/drag-drop';
 
 const DUMMY_SCROLL = '- scroll -';
@@ -31,6 +31,8 @@ const dumyScroll: gIF.scroll_t = {
     name: DUMMY_SCROLL,
     yPos: 0
 };
+
+const wait_msg = '--------';
 
 @Component({
     selector: 'app-root',
@@ -66,12 +68,16 @@ export class AppComponent implements OnInit, AfterViewInit {
     loading: any;
     dragFlag = false;
 
+    progressFlag = false;
+    waitMsg = 'wait';
+    msgIdx = 0;
+
     constructor(private events: EventsService,
                 private serialLink: SerialLinkService,
                 private udp: UdpService,
-                private http: HttpService,
+                //private http: HttpService,
                 public storage: StorageService,
-                private loadingController: LoadingController,
+                //private loadingController: LoadingController,
                 private matDialog: MatDialog,
                 private file: File,
                 private ngZone: NgZone,
@@ -119,10 +125,24 @@ export class AppComponent implements OnInit, AfterViewInit {
      *
      */
     async init() {
+
+        try {
+            const r_dir = await Filesystem.readdir({
+                directory: Directory.External,
+                path: ''
+            });
+            console.log(r_dir);
+        }
+        catch(err) {
+            console.log(err);
+        }
+
         try {
             const base64 = await Filesystem.readFile({
-                directory: Directory.ExternalStorage,
-                path: 'Download/floor_plan.jpg',
+                //directory: Directory.ExternalStorage,
+                directory: Directory.External,
+                //path: 'Download/floor_plan.jpg',
+                path: 'floor_plan.jpg',
             });
             const imgUrl = `data:image/jpeg;base64,${base64.data}`;
             this.setBkgImg(imgUrl);
@@ -134,8 +154,10 @@ export class AppComponent implements OnInit, AfterViewInit {
 
         try {
             const parts = await Filesystem.readFile({
-                directory: Directory.ExternalStorage,
-                path: 'Download/parts.json',
+                //directory: Directory.ExternalStorage,
+                directory: Directory.External,
+                //path: 'Download/parts.json',
+                path: 'parts.json',
                 encoding: Encoding.UTF8,
             });
             this.partDesc = JSON.parse(parts.data);
@@ -161,12 +183,13 @@ export class AppComponent implements OnInit, AfterViewInit {
                 console.log('get scrolls err: ' + err.code);
             }
         );
-
+        /*
         this.loading = await this.loadingController.create({
             message: '... wait',
             duration: 10000,
             mode: 'md',
         });
+        */
     }
 
     /***********************************************************************************************
@@ -287,6 +310,7 @@ export class AppComponent implements OnInit, AfterViewInit {
      */
     async setStyles(keyVal: any) {
 
+        this.startWait();
         setTimeout(()=>{
             const dialogConfig = new MatDialogConfig();
             dialogConfig.data = keyVal;
@@ -298,11 +322,12 @@ export class AppComponent implements OnInit, AfterViewInit {
 
             const dlgRef = this.matDialog.open(SetStyles, dialogConfig);
             dlgRef.afterOpened().subscribe(()=>{
-                this.dismissLoading();
+                this.progressFlag = false;
+                //this.dismissLoading();
             });
         }, 10);
 
-        await this.loading.present();
+        //await this.loading.present();
     }
 
     /***********************************************************************************************
@@ -313,6 +338,7 @@ export class AppComponent implements OnInit, AfterViewInit {
      */
     async onEditScrollsClick() {
 
+        this.startWait();
         setTimeout(()=>{
             const dlgData = {
                 scrolls: JSON.parse(JSON.stringify(this.scrolls)),
@@ -330,7 +356,8 @@ export class AppComponent implements OnInit, AfterViewInit {
             const dlgRef = this.matDialog.open(EditScrolls, dialogConfig);
 
             dlgRef.afterOpened().subscribe(()=>{
-                this.dismissLoading();
+                this.progressFlag = false;
+                //this.dismissLoading();
             });
             dlgRef.afterClosed().subscribe((data)=>{
                 if(data) {
@@ -341,7 +368,7 @@ export class AppComponent implements OnInit, AfterViewInit {
             });
         }, 10);
 
-        await this.loading.present();
+        //await this.loading.present();
     }
 
     /***********************************************************************************************
@@ -352,6 +379,7 @@ export class AppComponent implements OnInit, AfterViewInit {
      */
     async setDNS() {
 
+        this.startWait();
         setTimeout(()=>{
             const dialogConfig = new MatDialogConfig();
             dialogConfig.data = '';
@@ -363,11 +391,12 @@ export class AppComponent implements OnInit, AfterViewInit {
 
             const dlgRef = this.matDialog.open(EditFreeDNS, dialogConfig);
             dlgRef.afterOpened().subscribe(()=>{
-                this.dismissLoading();
+                this.progressFlag = false;
+                //this.dismissLoading();
             });
         }, 10);
 
-        await this.loading.present();
+        //await this.loading.present();
     }
 
     /***********************************************************************************************
@@ -378,6 +407,7 @@ export class AppComponent implements OnInit, AfterViewInit {
      */
     async editBinds() {
 
+        this.startWait();
         setTimeout(()=>{
             const dlgData = {
                 partMap: this.partMap,
@@ -392,11 +422,12 @@ export class AppComponent implements OnInit, AfterViewInit {
             const dlgRef = this.matDialog.open(EditBinds, dialogConfig);
 
             dlgRef.afterOpened().subscribe(()=>{
-                this.dismissLoading();
+                this.progressFlag = false;
+                //this.dismissLoading();
             });
         }, 10);
 
-        await this.loading.present();
+        //await this.loading.present();
     }
 
     /***********************************************************************************************
@@ -407,6 +438,7 @@ export class AppComponent implements OnInit, AfterViewInit {
      */
     async editThermostats() {
 
+        this.startWait();
         setTimeout(()=>{
             const dlgData = {
                 partMap: this.partMap,
@@ -422,7 +454,7 @@ export class AppComponent implements OnInit, AfterViewInit {
             const dlgRef = this.matDialog.open(EditStats, dialogConfig);
 
             dlgRef.afterOpened().subscribe(()=>{
-                // ---
+                this.progressFlag = false;
             });
         }, 10);
     }
@@ -499,7 +531,7 @@ export class AppComponent implements OnInit, AfterViewInit {
      *
      * brief
      *
-     */
+     *
     dismissLoading() {
         this.loading.dismiss().then(
             ()=>{
@@ -523,6 +555,7 @@ export class AppComponent implements OnInit, AfterViewInit {
             }
         );
     }
+    */
 
     /***********************************************************************************************
      * fn          tempEvent
@@ -578,6 +611,44 @@ export class AppComponent implements OnInit, AfterViewInit {
                     this.serialLink.udpZclCmd(JSON.stringify(zclCmd));
                 }
             }
+        }
+    }
+
+    /***********************************************************************************************
+     * fn          startWait
+     *
+     * brief
+     *
+     */
+    startWait(){
+        this.progressFlag = true;
+        this.waitMsg = 'wait...';
+        /*
+        this.msgIdx = 0;
+        setTimeout(() => {
+            this.incrWait();
+        }, 250);
+        */
+    }
+
+    /***********************************************************************************************
+     * fn          incrWait
+     *
+     * brief
+     *
+     */
+    incrWait(){
+        if(this.progressFlag === true){
+            const strArr = wait_msg.split('');
+            strArr[this.msgIdx] = 'x';
+            this.waitMsg = strArr.join('');
+            this.msgIdx++;
+            if(this.msgIdx === wait_msg.length){
+                this.msgIdx = 0;
+            }
+            setTimeout(() => {
+                this.incrWait();
+            }, 250);
         }
     }
 }
