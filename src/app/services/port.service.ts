@@ -71,17 +71,17 @@ export class PortService {
             await this.serial.requestPermission(serialPermOpt);
             try {
                 await this.serial.open(serialOpenOpt);
-                console.log('Serial connection opened');
+                this.utils.sendMsg('Serial connection opened');
                 this.serial.registerReadCallback().subscribe((data)=>{
                     this.slOnData(data);
                 });
             }
             catch(err) {
-                console.log(`open serial err: ${err}`);
+                this.utils.sendMsg(`open serial err: ${err}`, 'red');
             }
         }
         catch(err) {
-            console.log(`req permission err: ${err}`);
+            this.utils.sendMsg(`req permission err: ${err}`, 'red');
         }
     }
 
@@ -208,12 +208,12 @@ export class PortService {
                 dataHost.numSrcBinds = msgView.getUint8(msgIdx++);
                 const ttl = msgView.getUint16(msgIdx, gConst.LE);
 
-                let logMsg = this.utils.timeStamp();
-                logMsg += ` host annce -> shortAddr: 0x${dataHost.shortAddr.toString(16).padStart(4, '0').toUpperCase()},`;
-                logMsg += ` extAddr: ${this.utils.extToHex(dataHost.extAddr)},`;
-                logMsg += ` numAttrSets: ${dataHost.numAttrSets},`;
-                logMsg += ` numSrcBinds: ${dataHost.numSrcBinds}`;
-                console.log(logMsg);
+                //let logMsg = this.utils.timeStamp();
+                let logMsg = ` host -> short: 0x${dataHost.shortAddr.toString(16).padStart(4, '0').toUpperCase()},`;
+                logMsg += ` ext: ${this.utils.extToHex(dataHost.extAddr)},`;
+                logMsg += ` numAttr: ${dataHost.numAttrSets},`;
+                logMsg += ` numBinds: ${dataHost.numSrcBinds}`;
+                this.utils.sendMsg(logMsg);
 
                 if(this.hostCmdQueue.length > 15) {
                     this.hostCmdQueue = [];
@@ -260,7 +260,7 @@ export class PortService {
                 if(idx > -1) {
                     msgData[idx] = 32;
                 }
-                //console.log(String.fromCharCode.apply(null, dataArray));
+                this.utils.sendMsg(String.fromCharCode.apply(null, msgData));
                 break;
             }
             case gConst.SL_MSG_READ_ATTR_SET_AT_IDX: {
@@ -459,7 +459,7 @@ export class PortService {
      */
     async hostCmdTmo() {
 
-        console.log('--- READ_HOST_TMO ---');
+        this.utils.sendMsg('--- READ_HOST_TMO ---', 'red');
 
         if(this.hostCmdQueue.length === 0) {
             this.hostCmdFlag = false;

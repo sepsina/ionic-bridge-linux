@@ -9,6 +9,7 @@ import { AppComponent } from './app.component';
 import { SetStyles } from './set-styles/set-styles.page';
 import { EditScrolls } from './edit-scrolls/edit-scrolls';
 import { EditFreeDNS } from './edit-freeDNS/edit-freeDNS';
+import { ShowLogs } from './logs/show-logs';
 import { EditBinds } from './binds/binds.page';
 import { EditStats } from './x-stat/x_stat.page';
 import { HighlightSel } from './directives/highlight-sel.directive';
@@ -31,6 +32,7 @@ import { NativeStorage } from '@ionic-native/native-storage/ngx';
         SetStyles,
         EditScrolls,
         EditFreeDNS,
+        ShowLogs,
         EditBinds,
         EditStats,
         HighlightSel,

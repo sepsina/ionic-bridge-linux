@@ -1,0 +1,76 @@
+
+#dlg-head {
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-end;
+    align-items: stretch;
+    background: #e6e6e6;
+    padding: 3px;
+}
+#log-title {
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+    align-items: center;
+    /*border: 1px solid lightgrey;*/
+    padding-left: 3px;
+    user-select: none;
+    cursor: move;
+    flex: 1 1 100%;
+}
+
+#drag-handle {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    cursor: move;
+}
+
+#dlg-frame {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: stretch;
+    margin: 10px;
+    overflow-y: auto;
+    height: 400px;
+    max-height: 400px;
+}
+
+#logs{
+    min-height: 200px;
+    flex: 1 1 auto;
+    overflow: auto;
+    margin-bottom: 5px;
+    border-radius: 5px;
+}
+
+#cbScroll{
+    padding-right: 10px;
+}
+
+#logList {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    overflow: auto;
+}
+
+.log-msg{
+    padding: 2px 2px 2px 10px;
+    font-size: 12px;
+    border-bottom: solid 1px #ededed;
+}
+
+.cmd-bar {
+    position: sticky;
+    bottom: 0;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    flex: 1 0 100%;
+    padding: 10px;
+    background: #e6e6e6;
+}

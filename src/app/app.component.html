@@ -35,6 +35,11 @@
                     (click)="editThermostats()">
                 <mat-icon fontSet="material-icons-round">thermostat</mat-icon>
             </button>
+            <button id="show-logs-button"
+                    mat-button
+                    (click)="showLogs()">
+                <mat-icon fontSet="material-icons-round">notes</mat-icon>
+            </button>
         </div>
         <div id="test">
             <div id="floor-plan" #floorPlanRef resizeObserver (resize)="onResize($event)">

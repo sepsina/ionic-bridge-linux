@@ -11,6 +11,7 @@ import { MatListModule } from "@angular/material/list";
 import { MatSliderModule } from '@angular/material/slider';
 import { MatTooltipModule } from "@angular/material/tooltip";
 import { MatProgressSpinnerModule } from "@angular/material/progress-spinner";
+import { MatCheckboxModule } from '@angular/material/checkbox';
 
 @NgModule({
     declarations: [],
@@ -26,7 +27,8 @@ import { MatProgressSpinnerModule } from "@angular/material/progress-spinner";
         MatOptionModule,
         MatSliderModule,
         MatTooltipModule,
-        MatProgressSpinnerModule
+        MatProgressSpinnerModule,
+        MatCheckboxModule
     ],
     exports: [
         DragDropModule,
@@ -40,7 +42,8 @@ import { MatProgressSpinnerModule } from "@angular/material/progress-spinner";
         MatOptionModule,
         MatSliderModule,
         MatTooltipModule,
-        MatProgressSpinnerModule
+        MatProgressSpinnerModule,
+        MatCheckboxModule
     ]
 })
 export class AngularMaterialModule {

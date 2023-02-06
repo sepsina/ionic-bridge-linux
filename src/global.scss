@@ -80,7 +80,11 @@
     padding: 0;
     resize: horizontal;
     min-width: 600px;
-  }
+}
+
+.show-logs-container .mat-dialog-container {
+    padding: 0;
+}
 
 ::-webkit-scrollbar {
     -webkit-appearance: none;
@@ -124,4 +128,17 @@
     flex-direction: row;
     justify-content: flex-end;
     align-items: center;
+}
+
+.app-card-toolbar{
+    font-size: 0.9em;
+    border-bottom : solid 1px black;
+    //margin-top: 10px;
+    padding: 5px;
+}
+.app-card{
+    display: flex;
+    flex-direction: column;
+    border: solid black 1px;
+    border-radius: 5px;
 }

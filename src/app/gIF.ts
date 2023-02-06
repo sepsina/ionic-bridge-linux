@@ -265,7 +265,7 @@ export interface thermostat_t {
 }
 
 export interface on_off_actuator_t {
-    valid: boolean
+    valid: boolean;
     name: string;
     partNum: number;
     extAddr: number;
@@ -277,4 +277,9 @@ export interface tempEvent_t {
     temp: number;
     extAddr: number;
     endPoint: number;
+}
+
+export interface msgLogs_t {
+    text: string;
+    color: string;
 }
