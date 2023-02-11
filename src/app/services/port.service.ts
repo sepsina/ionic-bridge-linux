@@ -71,7 +71,7 @@ export class PortService {
             await this.serial.requestPermission(serialPermOpt);
             try {
                 await this.serial.open(serialOpenOpt);
-                this.utils.sendMsg('Serial connection opened');
+                this.utils.sendMsg('Serial connection opened', 'blue');
                 this.serial.registerReadCallback().subscribe((data)=>{
                     this.slOnData(data);
                 });
@@ -516,7 +516,7 @@ export class PortService {
         const pktBuf = new ArrayBuffer(256);
         const pktData = new Uint8Array(pktBuf);
         const pktView = new DataView(pktBuf);
-        const slMsgBuf = new Uint8Array(512);
+
         let i: number;
         let msgIdx: number;
 
@@ -541,29 +541,8 @@ export class PortService {
         }
         pktView.setUint8(gConst.CRC_IDX, crc);
 
-        msgIdx = 0;
-        slMsgBuf[msgIdx++] = gConst.SL_START_CHAR;
-        for(i = 0; i < msgLen; i++) {
-            if(pktData[i] < 0x10) {
-                pktData[i] ^= 0x10;
-                slMsgBuf[msgIdx++] = gConst.SL_ESC_CHAR;
-            }
-            slMsgBuf[msgIdx++] = pktData[i];
-        }
-        slMsgBuf[msgIdx++] = gConst.SL_END_CHAR;
+        await this.serialSend(pktData, msgLen);
 
-        const slMsgLen = msgIdx;
-        const slMsg = slMsgBuf.slice(0, slMsgLen);
-        let slHexMsg = '';
-        for(i = 0; i < slMsgLen; i++) {
-            slHexMsg += ('0' + slMsg[i].toString(16)).slice(-2);
-        }
-        try {
-            await this.serial.writeHex(slHexMsg);
-        }
-        catch(err) {
-            console.log('serial write err: ' + JSON.stringify(err));
-        }
     }
 
     /***********************************************************************************************
@@ -583,11 +562,12 @@ export class PortService {
         const pktBuf = new ArrayBuffer(256);
         const pktData = new Uint8Array(pktBuf);
         const pktView = new DataView(pktBuf);
-        const slMsgBuf = new Uint8Array(512);
+
+        let msgIdx: number;
         let i: number;
 
         this.seqNum = ++this.seqNum % 256;
-        let msgIdx = 0;
+        msgIdx = 0;
         pktView.setUint16(msgIdx, gConst.SL_MSG_READ_BIND_AT_IDX, gConst.LE);
         msgIdx += 2;
         msgIdx += 2 + 1; // len + crc
@@ -606,29 +586,8 @@ export class PortService {
         }
         pktView.setUint8(gConst.CRC_IDX, crc);
 
-        msgIdx = 0;
-        slMsgBuf[msgIdx++] = gConst.SL_START_CHAR;
-        for(i = 0; i < msgLen; i++) {
-            if(pktData[i] < 0x10) {
-                pktData[i] ^= 0x10;
-                slMsgBuf[msgIdx++] = gConst.SL_ESC_CHAR;
-            }
-            slMsgBuf[msgIdx++] = pktData[i];
-        }
-        slMsgBuf[msgIdx++] = gConst.SL_END_CHAR;
+        await this.serialSend(pktData, msgLen);
 
-        const slMsgLen = msgIdx;
-        const slMsg = slMsgBuf.slice(0, slMsgLen);
-        let slHexMsg = '';
-        for(i = 0; i < slMsgLen; i++) {
-            slHexMsg += ('0' + slMsg[i].toString(16)).slice(-2);
-        }
-        try {
-            await this.serial.writeHex(slHexMsg);
-        }
-        catch (err) {
-            console.log('serial write err: ' + JSON.stringify(err));
-        }
     }
 
     /***********************************************************************************************
@@ -667,7 +626,7 @@ export class PortService {
         const pktBuf = new ArrayBuffer(256);
         const pktData = new Uint8Array(pktBuf);
         const pktView = new DataView(pktBuf);
-        const slMsgBuf = new Uint8Array(512);
+
         let msgIdx: number;
         let i: number;
 
@@ -698,29 +657,8 @@ export class PortService {
         }
         pktView.setUint8(gConst.CRC_IDX, crc);
 
-        msgIdx = 0;
-        slMsgBuf[msgIdx++] = gConst.SL_START_CHAR;
-        for(i = 0; i < msgLen; i++) {
-            if(pktData[i] < 0x10) {
-                pktData[i] ^= 0x10;
-                slMsgBuf[msgIdx++] = gConst.SL_ESC_CHAR;
-            }
-            slMsgBuf[msgIdx++] = pktData[i];
-        }
-        slMsgBuf[msgIdx++] = gConst.SL_END_CHAR;
+        await this.serialSend(pktData, msgLen);
 
-        const slMsgLen = msgIdx;
-        const slMsg = slMsgBuf.slice(0, slMsgLen);
-        let slHexMsg = '';
-        for(i = 0; i < slMsgLen; i++) {
-            slHexMsg += ('0' + slMsg[i].toString(16)).slice(-2);
-        }
-        try {
-            await this.serial.writeHex(slHexMsg);
-        }
-        catch(err) {
-            console.log('serial write err: ' + JSON.stringify(err));
-        }
     }
 
     /***********************************************************************************************
@@ -759,7 +697,7 @@ export class PortService {
         const pktBuf = new ArrayBuffer(256);
         const pktData = new Uint8Array(pktBuf);
         const pktView = new DataView(pktBuf);
-        const slMsgBuf = new Uint8Array(512);
+
         let msgIdx: number;
         let i: number;
 
@@ -790,9 +728,23 @@ export class PortService {
         }
         pktView.setUint8(gConst.CRC_IDX, crc);
 
-        msgIdx = 0;
+        await this.serialSend(pktData, msgLen);
+
+    }
+
+    /***********************************************************************************************
+     * fn          serialSend
+     *
+     * brief
+     *
+     */
+    async serialSend(pktData: Uint8Array, msgLen: number) {
+
+        const slMsgBuf = new Uint8Array(512);
+        let msgIdx = 0;
+
         slMsgBuf[msgIdx++] = gConst.SL_START_CHAR;
-        for(i = 0; i < msgLen; i++) {
+        for(let i = 0; i < msgLen; i++) {
             if(pktData[i] < 0x10) {
                 pktData[i] ^= 0x10;
                 slMsgBuf[msgIdx++] = gConst.SL_ESC_CHAR;
@@ -804,17 +756,14 @@ export class PortService {
         const slMsgLen = msgIdx;
         const slMsg = slMsgBuf.slice(0, slMsgLen);
         let slHexMsg = '';
-        for(i = 0; i < slMsgLen; i++) {
+        for(let i = 0; i < slMsgLen; i++) {
             slHexMsg += ('0' + slMsg[i].toString(16)).slice(-2);
-        }
-        if(req.hasRsp) {
-            // ---
         }
         try {
             await this.serial.writeHex(slHexMsg);
         }
         catch (err) {
-            console.log('serial write err: ' + JSON.stringify(err));
+            this.utils.sendMsg(`serial write err: ${JSON.stringify(err)}`, 'red');
         }
     }
 }

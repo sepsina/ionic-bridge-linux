@@ -1,15 +1,20 @@
 ﻿/* eslint-disable object-shorthand */
 /* eslint-disable max-len */
 /* eslint-disable no-bitwise */
-import {Injectable} from '@angular/core';
-import { msgLogs_t } from '../gIF';
+import { Injectable, NgZone } from '@angular/core';
+//import { msgLogs_t } from '../gIF';
 import { EventsService } from './events.service';
+import * as gIF from '../gIF';
 
 @Injectable({
     providedIn: 'root',
 })
 export class UtilsService {
-    constructor(private events: EventsService) {
+
+    msgLogs: gIF.msgLogs_t[] = [];
+
+    constructor(private events: EventsService,
+                private ngZone: NgZone) {
         // ---
     }
 
@@ -146,13 +151,28 @@ export class UtilsService {
         return extHex.join(':');
     }
 
-    public sendMsg(msg: string, color: string = 'black'){
+    public sendMsg(msg: string, color: string = 'black', id: number = 1000){
         const log = `${this.timeStamp()} ${msg}`;
         console.log(log);
-        const msgLog: msgLogs_t = {
+        const msgLog: gIF.msgLogs_t = {
             text: log,
-            color: color
+            color: color,
+            id: id
         };
+        const last = this.msgLogs.slice(-1)[0];
+        if(this.msgLogs.length && (last.id === id) && (id === 7)){
+            this.ngZone.run(()=>{
+                this.msgLogs[this.msgLogs.length - 1] = msgLog;
+            });
+        }
+        else {
+            while(this.msgLogs.length >= 20) {
+                this.msgLogs.shift();
+            }
+            this.ngZone.run(()=>{
+                this.msgLogs.push(msgLog);
+            });
+        }
         this.events.publish('logMsg', msgLog);
     }
 }

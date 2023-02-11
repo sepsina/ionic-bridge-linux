@@ -21,7 +21,7 @@
             </mat-checkbox>
         </div>
         <div id="logList">
-            <div *ngFor="let msg of logs" class="log-msg left-center" [style.color]="msg.color">
+            <div *ngFor="let msg of utils.msgLogs" class="log-msg left-center" [style.color]="msg.color">
                 {{ msg.text }}
             </div>
         </div>

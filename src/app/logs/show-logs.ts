@@ -2,7 +2,7 @@
 import { Component, Inject, OnInit, AfterViewInit, NgZone } from '@angular/core';
 import { EventsService } from '../services/events.service';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
-
+import { UtilsService } from '../services/utils.service';
 import * as gConst from '../gConst';
 import * as gIF from '../gIF';
 
@@ -14,12 +14,12 @@ import * as gIF from '../gIF';
 })
 export class ShowLogs implements OnInit, AfterViewInit {
 
-    logs: gIF.msgLogs_t[] = [];
     scrollFlag = true;
 
     constructor(private dialogRef: MatDialogRef<ShowLogs>,
                 @Inject(MAT_DIALOG_DATA) public dlgData: any,
                 private events: EventsService,
+                public utils: UtilsService,
                 private ngZone: NgZone) {
         // ---
     }
@@ -31,14 +31,7 @@ export class ShowLogs implements OnInit, AfterViewInit {
      *
      */
     ngOnInit(): void {
-        this.logs = JSON.parse(this.dlgData);
         this.events.subscribe('logMsg', (msg: gIF.msgLogs_t)=>{
-            while(this.logs.length >= 20) {
-                this.logs.shift();
-            }
-            this.ngZone.run(()=>{
-                this.logs.push(msg);
-            });
             if(this.scrollFlag === true) {
                 const logsDiv = document.getElementById('logList');
                 if(logsDiv){
@@ -97,7 +90,7 @@ export class ShowLogs implements OnInit, AfterViewInit {
      *
      */
     clearLogs() {
-        this.logs = [];
+        this.utils.msgLogs = [];
     }
 
 }
