@@ -126,4 +126,4 @@ export const RD_BIND = 1;
 export const WR_BIND = 2;
 export const ZCL_CMD = 3;
 
-export const THERMOSTAT_HYSTERESIS = 0.5
+export const THERMOSTAT_HYSTERESIS = 0.5;

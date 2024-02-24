@@ -34,6 +34,11 @@ export class PortService {
 
     private seqNum = 0;
 
+    private testPortTMO = null;
+    private validPortFlag = false;
+    private portOpenFlag = false;
+    private comFlag = false;
+
     constructor(private serial: Serial,
                 private events: EventsService,
                 private utils: UtilsService) {
@@ -43,6 +48,55 @@ export class PortService {
         this.events.subscribe('zcl_cmd', (cmd)=>{
             this.udpZclCmd(cmd);
         });
+        this.serial.registerReadCallback().subscribe((data)=>{
+            this.slOnData(data);
+        });
+        setTimeout(()=>{
+            this.checkCom();
+        }, 15000);
+        setTimeout(()=>{
+            this.openComPort();
+        }, 1000);
+    }
+
+    /***********************************************************************************************
+     * fn          checkCom
+     *
+     * brief
+     *
+     */
+    checkCom() {
+        if(this.comFlag === false) {
+            this.hostCmdQueue = [];
+            this.hostCmdFlag = false;
+            if(this.validPortFlag === true){
+                setTimeout(()=>{
+                    this.closeComPort();
+                }, 0);
+            }
+        }
+        this.comFlag = false;
+        setTimeout(()=>{
+            this.checkCom();
+        }, 30000);
+    }
+
+    /***********************************************************************************************
+     * fn          closeComPort
+     *
+     * brief
+     *
+     */
+    async closeComPort() {
+        if(this.portOpenFlag === true){
+            await this.serial.close();
+        }
+        this.portOpenFlag = false;
+        this.validPortFlag = false;
+        this.utils.sendMsg('close port', 'red');
+        setTimeout(() => {
+           this.openComPort();
+        }, 2000);
     }
 
     /***********************************************************************************************
@@ -71,17 +125,25 @@ export class PortService {
             await this.serial.requestPermission(serialPermOpt);
             try {
                 await this.serial.open(serialOpenOpt);
+                this.portOpenFlag = true;
+                this.testPortTMO = setTimeout(()=>{
+                    this.closeComPort();
+                }, 2000);
+                this.testPortReq();
                 this.utils.sendMsg('Serial connection opened', 'blue');
-                this.serial.registerReadCallback().subscribe((data)=>{
-                    this.slOnData(data);
-                });
             }
             catch(err) {
                 this.utils.sendMsg(`open serial err: ${err}`, 'red');
+                setTimeout(() => {
+                    this.closeComPort();
+                }, 2000);
             }
         }
         catch(err) {
-            this.utils.sendMsg(`req permission err: ${err}`, 'red');
+            this.utils.sendMsg(`req permission err: ${err}`, 'red', 7);
+            setTimeout(() => {
+                this.openComPort();
+            }, 2000);
         }
     }
 
@@ -181,8 +243,9 @@ export class PortService {
      */
     processMsg(msg: gIF.slMsg_t) {
 
-        const msgData = new Uint8Array(msg.data);
+        this.comFlag = true;
 
+        const msgData = new Uint8Array(msg.data);
         switch(msg.type) {
             case gConst.SL_MSG_TESTPORT: {
                 const msgView = new DataView(msgData.buffer);
@@ -191,7 +254,9 @@ export class PortService {
                 if(msgSeqNum === this.seqNum) {
                     const testData = msgView.getUint32(msgIdx, gConst.LE);
                     if(testData === 0x67190110) {
-                        // ---
+                        clearTimeout(this.testPortTMO);
+                        this.validPortFlag = true;
+                        this.utils.sendMsg('port valid', 'green');
                     }
                 }
                 break;
@@ -730,6 +795,42 @@ export class PortService {
 
         await this.serialSend(pktData, msgLen);
 
+    }
+
+    /***********************************************************************************************
+     * fn          testPortReq
+     *
+     * brief
+     *
+     */
+    private testPortReq() {
+
+        const pktBuf = new ArrayBuffer(64);
+        const pktData = new Uint8Array(pktBuf);
+        const pktView = new DataView(pktBuf);
+
+        let i: number;
+        let msgIdx: number;
+
+        this.seqNum = ++this.seqNum % 256;
+        msgIdx = 0;
+        pktView.setUint16(msgIdx, gConst.SL_MSG_TESTPORT, gConst.LE);
+        msgIdx += 2;
+        msgIdx += 2 + 1; // len + crc
+        // cmd data
+        pktView.setUint8(msgIdx++, this.seqNum);
+        pktView.setUint32(msgIdx, 0x67190110, gConst.LE);
+        msgIdx += 4;
+        const msgLen = msgIdx;
+        const dataLen = msgLen - gConst.HEAD_LEN;
+        pktView.setUint16(gConst.LEN_IDX, dataLen, gConst.LE);
+        let crc = 0;
+        for(i = 0; i < msgLen; i++) {
+            crc ^= pktData[i];
+        }
+        pktView.setUint8(gConst.CRC_IDX, crc);
+
+        this.serialSend(pktData, msgLen);
     }
 
     /***********************************************************************************************

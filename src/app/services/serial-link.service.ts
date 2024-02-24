@@ -54,10 +54,11 @@ export class SerialLinkService {
         this.events.subscribe('cluster_bind', (bind)=>{
             this.addBind(JSON.parse(bind));
         });
+        /*
         this.port.openComPort().then(()=>{
             // ---
         });
-
+        */
         setTimeout(()=>{
             this.cleanAgedAttribs();
         }, 60000);
